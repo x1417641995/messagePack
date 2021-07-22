@@ -1,36 +1,21 @@
-
-
 import json
 import msgpack
 
+def load_json(path):
 
-with open('data1.json') as f:
-  data = json.load(f)
+  with open(path) as f:
+    data = json.load(f)
 
-#print(data)
-a = msgpack.packb({
-  "a" : 0
-})
+  return data 
 
-j = {
-  "squadname": "super hero squad"
-}
+def json_to_messagepack(data):
+  return msgpack.packb(data)
+  
 
-aa = {
-  "a" : 0
-}
+if __name__ == '__main__':
+  
+  data = load_json('data1.json')
+  messagepack =  json_to_messagepack(data)
+  print(messagepack)
 
-ma = msgpack.packb(j)
-
-mp = msgpack.dumps(j, use_bin_type=True)
-
-print(ma)
-print(mp)
-print(len(mp))
-up = msgpack.unpackb(mp)
-print(up)
-
-
-# for i in mp:
-#     print(i)
 
