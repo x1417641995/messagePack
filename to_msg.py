@@ -1,26 +1,24 @@
 import struct
+import json
 
+# this def check the data type
 def type_check(msg, data):
     if(type(data) == list):
         list_transform(msg, data)
-        #return msg
     if(type(data) == dict):
-        #msg.extend(dict_transform(msg, data))
         dict_transform(msg, data)
-        #return msg
     if(type(data) == str):
         str_transform(msg, data)
-        #return msg
     if(type(data) == int):
         int_transform(msg, data)
     if(type(data) == bool):
         bool_transform(msg, data)
-
     if(type(data) == float):
         float_transform(msg, data)
     if(data is None):
         msg.extend(bytearray([0xc0]))
 
+# this def transform str to messagepack
 def str_transform(msg, data):
     if(len(data) <= 0x1F):
         strlength = 0xa0 + len(data)
@@ -36,6 +34,7 @@ def str_transform(msg, data):
         msg.extend(struct.pack(">BI", 0xDB, len(data)))
         msg.extend(bytearray(data, "utf8"))
 
+# this def transform list to messagepack
 def list_transform(msg, data):
     if len(data) <= 0x0F:
         listlength = 0x90 + len(data)
@@ -49,7 +48,7 @@ def list_transform(msg, data):
         type_check(msg, i)
     
 
-
+# this def transform dict to messagepack
 def dict_transform(msg, data):
     if (len(data) <= 0x0F):
         dictlength = 0x80 + len(data)
@@ -58,12 +57,12 @@ def dict_transform(msg, data):
         msg.extend(struct.pack(">BH", 0xDE, len(data)))
     elif (len(data) <= 0xFFFFFFFF):
         msg.extend(struct.pack(">BI", 0xDF, len(data)))
-        
+
     for key, value in data.items():
         type_check(msg, key)
         type_check(msg, value)
 
-
+# this def transform int to messagepack
 def int_transform(msg, data):
     if 0 <= data < 0x80:
         msg.extend(struct.pack("B", data))
@@ -86,134 +85,59 @@ def int_transform(msg, data):
     if -0x8000000000000000 <= data < -0x80000000:
         msg.extend(struct.pack(">Bq", 0xD3, data))
 
+# this def transform bool to messagepack
 def bool_transform(msg, data):
     if(data == True):
         msg.extend(bytearray([0xc3]))
     if(data == False): 
         msg.extend(bytearray([0xc2]))
 
+# this def transform float to messagepack
 def float_transform(msg, data):
     # python float 32
     msg.extend(struct.pack(">Bd", 0xCB, data))
 
-
-
-def json_to_msg(data):
-    
-    l = len(data)
-    a = 0x80 + l-1
-    dictlength = 0x80 + len(data)
-    
-    msg = bytearray()#bytearray([dictlength])
-    print(msg)
-    print(type(data))
+# this def covert messagepack to json
+def json_to_msg(data):  
+    msg = bytearray()
     type_check(msg, data)
-    # for key, value in data.items():
-    #     type_check(msg, key)
-    #     type_check(msg, value)
-    #     print(4)
-    
-    '''
-    for key, value in data.items():
-        print(key, value)
-        strlength = 0xa0 + len(key)
-        #a = str.encode(key)
+    return bytes(msg) 
 
-        # key transform
-        msg.extend(bytearray([strlength]))
-        msg.extend(str.encode(key))
-        #
-        print(type(value))
-        if(type(value) == str):
-            strlength = 0xa0 + len(value)
-            msg.extend(bytearray([strlength]))
-            msg.extend(str.encode(value))
-        if(type(value) == list):
-            listlength = 0x90 + len(value)
-            msg.extend(bytearray([listlength]))
-            for i in value:
-                if(type(i) == str):
-                    strlength = 0xa0 + len(i)
-                    msg.extend(bytearray([strlength]))
-                    msg.extend(str.encode(i))
-            #msg.extend(str.encode(value))
-    '''    
-    
-    print(msg)
-    print(bytes(msg))    
+# this def read json file
+def load_json(path):
+    with open(path) as f:
+        data = json.load(f)
+
+    return data  
 
 
-# data = {
-#     "number":None,#128*2,
-#     #"languages":"dfgd56444444444444444444444fdgdfgdfgdgfdgvvvscescescsevsvevvfsdvdfsvsfdsvdfvsdfvfvfsdvfsdfvds444",
-#     # "bool": True,
-#     # "bool3": False,
-#     # "name": "Bob", 
-#     # "languages": ["English", "Fench"],
-#     # "meta":{
-#     #     "type":"2",
-#     #     "f":"abc"
-#     # }
-#     # "number3":None,
-#     # "number2":None,
-#     # "number4":None,
-#     "languages": ["English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
-#     , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
-#     , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
-#     , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"],
-# }
-data = {
-  "error_no":0,
-  "message":"",
-  "result":{
-    "data":[
-      {
-        "datatype":1,
-        "itemdata":
+if __name__ == '__main__':
+
+    data = {
+        "error_no":0,
+        "message":"",
+        "result":{
+            "data":[
             {
-              "sname":"\u5fae\u533b",
-              "packageid":"330611",
-              "tabs":[
-                        {
-                          "type":1,
-                          "f":"abc"
-                        },
-              ]
-            }
-      },
+                "datatype":1,
+                "itemdata":
+                    {
+                    "sname":"\u5fae\u533b",
+                    "packageid":"330611",
+                    "tabs":[
+                                {
+                                "type":1,
+                                "f":"abc"
+                                },
+                    ]
+                    }
+            },
 
-    ],
-    "hasNextPage":True,
-    "dirtag":"soft"
-  },
-  "error_no5":0,
-  "error_no55":0,
-  "error_no11":0,
-  "error_no12":0,
-  "error_no13":0,
-  "error_no14":0,
-  "error_no15":0,
-  "error_no16":0,
-  "error_no17":0,
-  "error_no18":0,
-  "error_no19":0,
-  "error_no20":0,
-  "error_no21":0,
-  "error_no22":0,
-  "error_no23":0,
-  "error_no24":0,
-}
-
-
-json_to_msg(data)
-
-
-def json_to_messagepack(data):
-    import msgpack
-    return msgpack.packb(data)
-
-print(json_to_messagepack(data))
-print(0x7f)
-
-print(0x0F)
-print(0x9f - 0x90)
+            ],
+            "hasNextPage":True,
+            "dirtag":"soft"
+        },
+    }
+    #data = load_json('data1.json')
+    messagepack =  json_to_msg(data)
+    print(messagepack)
