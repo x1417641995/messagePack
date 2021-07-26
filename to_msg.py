@@ -113,31 +113,31 @@ def load_json(path):
 
 if __name__ == '__main__':
 
-    data = {
-        "error_no":0,
-        "message":"",
-        "result":{
-            "data":[
-            {
-                "datatype":1,
-                "itemdata":
-                    {
-                    "sname":"\u5fae\u533b",
-                    "packageid":"330611",
-                    "tabs":[
-                                {
-                                "type":1,
-                                "f":"abc"
-                                },
-                    ]
-                    }
-            },
+    # data = {
+    #     "error_no":0,
+    #     "message":"",
+    #     "result":{
+    #         "data":[
+    #         {
+    #             "datatype":1,
+    #             "itemdata":
+    #                 {
+    #                 "sname":"\u5fae\u533b",
+    #                 "packageid":"330611",
+    #                 "tabs":[
+    #                             {
+    #                             "type":1,
+    #                             "f":"abc"
+    #                             },
+    #                 ]
+    #                 }
+    #         },
 
-            ],
-            "hasNextPage":True,
-            "dirtag":"soft"
-        },
-    }
-    #data = load_json('data1.json')
+    #         ],
+    #         "hasNextPage":True,
+    #         "dirtag":"soft"
+    #     },
+    # }
+    data = load_json('data1.json')
     messagepack =  json_to_msg(data)
     print(messagepack)
