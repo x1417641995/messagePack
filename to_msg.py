@@ -5,7 +5,8 @@ def type_check(msg, data):
         list_transform(msg, data)
         #return msg
     if(type(data) == dict):
-        msg.extend(dict_transform(msg, data))
+        #msg.extend(dict_transform(msg, data))
+        dict_transform(msg, data)
         #return msg
     if(type(data) == str):
         str_transform(msg, data)
@@ -43,18 +44,25 @@ def list_transform(msg, data):
         msg.extend(struct.pack(">BH", 0xDC, len(data)))
     elif len(data) <= 0xFFFFFFFF:
         msg.extend(struct.pack(">BI", 0xDD, len(data)))
+
     for i in data:
         type_check(msg, i)
     
 
 
 def dict_transform(msg, data):
-    dictlength = 0x80 + len(data)
-    msg = bytearray([dictlength])
+    if (len(data) <= 0x0F):
+        dictlength = 0x80 + len(data)
+        msg.extend(bytearray([dictlength]))
+    elif (len(data) <= 0xFFFF):
+        msg.extend(struct.pack(">BH", 0xDE, len(data)))
+    elif (len(data) <= 0xFFFFFFFF):
+        msg.extend(struct.pack(">BI", 0xDF, len(data)))
+        
     for key, value in data.items():
         type_check(msg, key)
         type_check(msg, value)
-    return  msg
+
 
 def int_transform(msg, data):
     if 0 <= data < 0x80:
@@ -135,50 +143,66 @@ def json_to_msg(data):
     print(bytes(msg))    
 
 
-data = {
-    "number":None,#128*2,
-    #"languages":"dfgd56444444444444444444444fdgdfgdfgdgfdgvvvscescescsevsvevvfsdvdfsvsfdsvdfvsdfvfvfsdvfsdfvds444",
-    # "bool": True,
-    # "bool3": False,
-    # "name": "Bob", 
-    # "languages": ["English", "Fench"],
-    # "meta":{
-    #     "type":"2",
-    #     "f":"abc"
-    # }
-    # "number3":None,
-    # "number2":None,
-    # "number4":None,
-    "languages": ["English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
-    , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
-    , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
-    , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"],
-}
 # data = {
-#   "error_no":0,
-#   "message":"",
-#   "result":{
-#     "data":[
-#       {
-#         "datatype":1,
-#         "itemdata":
-#             {
-#               "sname":"\u5fae\u533b",
-#               "packageid":"330611",
-#               "tabs":[
-#                         {
-#                           "type":1,
-#                           "f":"abc"
-#                         },
-#               ]
-#             }
-#       },
-
-#     ],
-#     "hasNextPage":True,
-#     "dirtag":"soft"
-#   }
+#     "number":None,#128*2,
+#     #"languages":"dfgd56444444444444444444444fdgdfgdfgdgfdgvvvscescescsevsvevvfsdvdfsvsfdsvdfvsdfvfvfsdvfsdfvds444",
+#     # "bool": True,
+#     # "bool3": False,
+#     # "name": "Bob", 
+#     # "languages": ["English", "Fench"],
+#     # "meta":{
+#     #     "type":"2",
+#     #     "f":"abc"
+#     # }
+#     # "number3":None,
+#     # "number2":None,
+#     # "number4":None,
+#     "languages": ["English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
+#     , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
+#     , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
+#     , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"],
 # }
+data = {
+  "error_no":0,
+  "message":"",
+  "result":{
+    "data":[
+      {
+        "datatype":1,
+        "itemdata":
+            {
+              "sname":"\u5fae\u533b",
+              "packageid":"330611",
+              "tabs":[
+                        {
+                          "type":1,
+                          "f":"abc"
+                        },
+              ]
+            }
+      },
+
+    ],
+    "hasNextPage":True,
+    "dirtag":"soft"
+  },
+  "error_no5":0,
+  "error_no55":0,
+  "error_no11":0,
+  "error_no12":0,
+  "error_no13":0,
+  "error_no14":0,
+  "error_no15":0,
+  "error_no16":0,
+  "error_no17":0,
+  "error_no18":0,
+  "error_no19":0,
+  "error_no20":0,
+  "error_no21":0,
+  "error_no22":0,
+  "error_no23":0,
+  "error_no24":0,
+}
 
 
 json_to_msg(data)
