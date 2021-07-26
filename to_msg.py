@@ -21,9 +21,19 @@ def type_check(msg, data):
         msg.extend(bytearray([0xc0]))
 
 def str_transform(msg, data):
-    strlength = 0xa0 + len(data)
-    msg.extend(bytearray([strlength]))
-    msg.extend(str.encode(data))
+    if(len(data) <= 0x1F):
+        strlength = 0xa0 + len(data)
+        msg.extend(bytearray([strlength]))
+        msg.extend(str.encode(data))
+    elif(len(data) <= 0xFF):
+        msg.extend(struct.pack(">BB", 0xD9, len(data)))
+        msg.extend(bytearray(data, "utf8"))  
+    elif(len(data) <= 0xFFFF):
+        msg.extend(struct.pack(">BH", 0xDA, len(data)))
+        msg.extend(bytearray(data, "utf8"))
+    elif(len(data) <= 0xFFFFFFFF):
+        msg.extend(struct.pack(">BI", 0xDB, len(data)))
+        msg.extend(bytearray(data, "utf8"))
 
 def list_transform(msg, data):
     listlength = 0x90 + len(data)
@@ -120,7 +130,7 @@ def json_to_msg(data):
 
 data = {
     "number":None,#128*2,
-    "languages":"dfgd56444444444444444444444fdgdfgdfgdgfdgvvvscescescsevsvevvfsdvdfsvsfdsvdfvsdfvfvfsdvfsdfvds444",
+    "languages":"dfgd56444444444444444444444fdgdfgdfgdgfdgvvvscescescsevsvevvfsdvdfsvsfdsvdfvsdfvfvfsdvfsdfvds444dfgd56444444444444444444444fdgdfgdfgdgfdgvvvscescescsevsvevvfsdvdfsvsfdsvdfvsdfvfvfsdvfsdfvds444",
     # "bool": True,
     # "bool3": False,
     # "name": "Bob", 
@@ -157,7 +167,7 @@ data = {
 # }
 
 
-#json_to_msg(data)
+json_to_msg(data)
 
 
 def json_to_messagepack(data):
