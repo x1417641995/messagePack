@@ -36,10 +36,17 @@ def str_transform(msg, data):
         msg.extend(bytearray(data, "utf8"))
 
 def list_transform(msg, data):
-    listlength = 0x90 + len(data)
-    msg.extend(bytearray([listlength]))
+    if len(data) <= 0x0F:
+        listlength = 0x90 + len(data)
+        msg.extend(bytearray([listlength]))
+    elif len(data) <= 0xFFFF:
+        msg.extend(struct.pack(">BH", 0xDC, len(data)))
+    elif len(data) <= 0xFFFFFFFF:
+        msg.extend(struct.pack(">BI", 0xDD, len(data)))
     for i in data:
         type_check(msg, i)
+    
+
 
 def dict_transform(msg, data):
     dictlength = 0x80 + len(data)
@@ -130,7 +137,7 @@ def json_to_msg(data):
 
 data = {
     "number":None,#128*2,
-    "languages":"dfgd56444444444444444444444fdgdfgdfgdgfdgvvvscescescsevsvevvfsdvdfsvsfdsvdfvsdfvfvfsdvfsdfvds444dfgd56444444444444444444444fdgdfgdfgdgfdgvvvscescescsevsvevvfsdvdfsvsfdsvdfvsdfvfvfsdvfsdfvds444",
+    #"languages":"dfgd56444444444444444444444fdgdfgdfgdgfdgvvvscescescsevsvevvfsdvdfsvsfdsvdfvsdfvfvfsdvfsdfvds444",
     # "bool": True,
     # "bool3": False,
     # "name": "Bob", 
@@ -139,6 +146,13 @@ data = {
     #     "type":"2",
     #     "f":"abc"
     # }
+    # "number3":None,
+    # "number2":None,
+    # "number4":None,
+    "languages": ["English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
+    , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
+    , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"
+    , "English", "Fench", "English", "Fench", "English", "Fench", "English", "Fench"],
 }
 # data = {
 #   "error_no":0,
@@ -176,3 +190,6 @@ def json_to_messagepack(data):
 
 print(json_to_messagepack(data))
 print(0x7f)
+
+print(0x0F)
+print(0x9f - 0x90)
