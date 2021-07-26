@@ -20,5 +20,5 @@ $ pip install msgpack
 ### How to use without msgpack
 * to_msg 
   
-  run `json_to_MessagePack.py`  
+  run `to_msg.py`  
   load data1.json covert to messagePack and return bytes by messagepack format without using msgpack
